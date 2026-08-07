@@ -44,7 +44,7 @@ async function fetchDashboard() {
 
         const response = await axios.get(
 
-            "http://127.0.0.1:8000/history/dashboard/stats"
+            "https://secure-chainpay.onrender.com/history/dashboard/stats"
 
         );
 

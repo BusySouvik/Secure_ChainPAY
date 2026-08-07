@@ -37,7 +37,7 @@ function AIAssistant() {
         try {
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/chat/",
+                "https://secure-chainpay.onrender.com/chat/",
                 {
                     message: userMessage
                 }
