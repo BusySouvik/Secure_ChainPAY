@@ -66,7 +66,7 @@ async function fetchRecentPayments() {
     try {
 
         const response = await axios.get(
-            "http://127.0.0.1:8000/history/"
+            "https://secure-chainpay.onrender.com/history/"
         );
 
         setRecentPayments(response.data.slice(0, 5));
