@@ -23,12 +23,17 @@ Recommendation:
 Explain this in simple language for a normal customer in under 50 words.
 """
 
-    response = client.models.generate_content(
-        model="models/gemini-3.5-flash",
-        contents=prompt,
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+        print("Gemini Explain Error:", e)
+        raise
 
 
 def chat_with_gemini(message):
@@ -38,7 +43,8 @@ You are SecureChain AI.
 
 You are an AI assistant for a UPI payment troubleshooting application.
 
-Answer only questions related to:
+Answer ONLY questions related to:
+
 - UPI
 - Banking
 - Payment failures
@@ -46,16 +52,22 @@ Answer only questions related to:
 - Blockchain verification
 - SecureChainPay
 
-If the question is unrelated, politely say:
+If the question is unrelated, reply:
+
 "I specialize in banking and UPI assistance."
 
 User:
 {message}
 """
 
-    response = client.models.generate_content(
-        model="models/gemini-3.5-flash",
-        contents=prompt,
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+        print("Gemini Chat Error:", e)
+        raise

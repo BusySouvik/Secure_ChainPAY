@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+import traceback
 
 from database import get_db
 from models import Transaction
@@ -21,7 +22,6 @@ def analyze(
     request: AnalyzeRequest,
     db: Session = Depends(get_db)
 ):
-
     try:
 
         # Check duplicate transaction
@@ -33,43 +33,38 @@ def analyze(
 
         if existing:
             return {
-                "message": "Duplicate Transaction Detected",
                 "transaction_id": existing.transaction_id,
-                "risk_score": 100,
-                "risk_level": "HIGH",
-                "blockchain_hash": existing.blockchain_hash
+                "status": existing.status,
+                "root_cause": existing.diagnosis,
+                "ai_explanation": existing.ai_explanation,
+                "recommendation": existing.recommendation,
+                "risk_score": existing.risk_score,
+                "blockchain_hash": existing.blockchain_hash,
             }
 
-        # Diagnosis
+        # Get diagnosis
         diagnosis = diagnose(request.error_code)
 
-        # AI Explanation
-        try:
-            ai_response = explain_error(
-                diagnosis["root_cause"],
-                diagnosis["recommendation"]
-            )
-        except Exception as e:
-            print("Gemini Error:", e)
-            return {
-                "error": "Gemini Error",
-                "details": str(e)
-            }
+        # AI explanation
+        ai_response = explain_error(
+            diagnosis["root_cause"],
+            diagnosis["recommendation"]
+        )
 
-        # Fraud Analysis
+        # Fraud detection
         risk = calculate_risk(
             request.amount,
             request.status,
             request.error_code
         )
 
-        # Blockchain Hash
+        # Blockchain hash
         blockchain_hash = generate_hash(
             request.transaction_id,
             diagnosis["root_cause"]
         )
 
-        # Save to database
+        # Save transaction
         transaction = Transaction(
             transaction_id=request.transaction_id,
             sender_bank=request.sender_bank,
@@ -89,17 +84,18 @@ def analyze(
         db.refresh(transaction)
 
         return {
-            "transaction_id": request.transaction_id,
-            "root_cause": diagnosis["root_cause"],
-            "ai_explanation": ai_response,
-            "recommendation": diagnosis["recommendation"],
-            "risk_score": risk,
-            "blockchain_hash": blockchain_hash
+            "transaction_id": transaction.transaction_id,
+            "status": transaction.status,
+            "root_cause": transaction.diagnosis,
+            "ai_explanation": transaction.ai_explanation,
+            "recommendation": transaction.recommendation,
+            "risk_score": transaction.risk_score,
+            "blockchain_hash": transaction.blockchain_hash,
         }
 
     except Exception as e:
-        print("Analyze Route Error:", e)
-        return {
-            "error": "Analyze Route Failed",
-            "details": str(e)
-        }
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
