@@ -77,6 +77,6 @@ User:
 
     except Exception as e:
 
-        print("Gemini Error:", e)
+        print("Gemini Error:", str(e))
 
-        return "Sorry, the AI service is temporarily unavailable."
+        return f"Gemini Error: {str(e)}"
