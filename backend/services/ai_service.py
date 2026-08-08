@@ -26,7 +26,7 @@ Explain this in simple language for a normal customer in under 50 words.
     try:
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=prompt,
         )
 
@@ -69,7 +69,7 @@ User:
     try:
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=prompt,
         )
 
