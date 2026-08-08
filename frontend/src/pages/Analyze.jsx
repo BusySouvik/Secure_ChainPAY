@@ -39,39 +39,63 @@ function Analyze() {
 
         try {
 
-            const response = await axios.post(
+    const response = await axios.post(
 
-                "https://secure-chainpay.onrender.com/analyze/",
+        "https://secure-chainpay.onrender.com/analyze/",
 
-                {
-
-                    transaction_id: transactionId,
-
-                    sender_bank: senderBank,
-
-                    receiver_bank: receiverBank,
-
-                    amount: Number(amount),
-
-                    status: status,
-
-                    error_code: issueToErrorCode[issue],
-
-                }
-
-            );
-
-            setResult(response.data);
-
+        {
+            transaction_id: transactionId,
+            sender_bank: senderBank,
+            receiver_bank: receiverBank,
+            amount: Number(amount),
+            status: status,
+            error_code: issueToErrorCode[issue],
         }
 
-        catch (err) {
+    );
 
-            console.log(err);
+    // ADD THESE TWO LINES
+    console.log("Response:", response);
+    console.log("Response Data:", response.data);
 
-            alert("Backend Connection Failed");
+    setResult(response.data);
 
-        }
+}
+
+catch (err) {
+
+    console.log("========== AXIOS ERROR ==========");
+    console.log(err);
+
+    if (err.response) {
+
+        console.log("Status:", err.response.status);
+        console.log("Headers:", err.response.headers);
+        console.log("Data:", err.response.data);
+
+        alert(
+            "Status: " +
+            err.response.status +
+            "\n\n" +
+            JSON.stringify(err.response.data, null, 2)
+        );
+
+    } else if (err.request) {
+
+        console.log("No response received");
+        console.log(err.request);
+
+        alert("No response received from backend.");
+
+    } else {
+
+        console.log(err.message);
+
+        alert(err.message);
+
+    }
+
+}
 
         setLoading(false);
 
