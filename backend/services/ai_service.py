@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google import genai
+from google.genai.errors import ClientError
 
 load_dotenv()
 
@@ -24,15 +25,20 @@ Explain this in simple language for a normal customer in under 50 words.
 """
 
     try:
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="models/gemini-3.5-flash",
             contents=prompt,
         )
 
         return response.text
 
+    except ClientError as e:
+        print("Gemini Error:", e)
+        raise
+
     except Exception as e:
-        print("Gemini Explain Error:", e)
+        print("Unexpected Gemini Error:", e)
         raise
 
 
@@ -52,7 +58,7 @@ Answer ONLY questions related to:
 - Blockchain verification
 - SecureChainPay
 
-If the question is unrelated, reply:
+If the question is unrelated, reply exactly:
 
 "I specialize in banking and UPI assistance."
 
@@ -61,13 +67,18 @@ User:
 """
 
     try:
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="models/gemini-3.5-flash",
             contents=prompt,
         )
 
         return response.text
 
-    except Exception as e:
+    except ClientError as e:
         print("Gemini Chat Error:", e)
+        raise
+
+    except Exception as e:
+        print("Unexpected Chat Error:", e)
         raise
